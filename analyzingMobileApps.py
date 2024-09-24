@@ -64,9 +64,8 @@ def parseoApple():
                     ipadScUrlsNum = linea[13]
                     langNum = linea[14]
                     vppLic = linea[15]
-                    datosApple.append(lineaParseada=(columnTitle[0],columnTitle[1],columnTitle[2],columnTitle[3],columnTitle[4],columnTitle[5],columnTitle[6],columnTitle[7],columnTitle[8],columnTitle[9],columnTitle[10],columnTitle[11],columnTitle[12],columnTitle[13],columnTitle[14],columnTitle[15]))
-
-                
+                    lineaParseada=(id, trackName, sizeBytes, currency, price, ratingCountTot, ratingCountVer, userRating, userRatingVer, version, contRating, primeGenre, supDevicesNum, ipadScUrlsNum, langNum, vppLic)   
+                    datosApple.append(lineaParseada)
     return datosApple
 
 
@@ -83,4 +82,37 @@ def explore_data(dataset, start, end, rows_and_columns=False):
         print('Number of columns:', len(dataset[0]))
 
 #print(explore_data(parseoAndroid(),0,len(parseoAndroid()), True))
-print(explore_data(parseoApple(),0,len(parseoApple())))
+#print(explore_data(parseoApple(),0,len(parseoApple())))
+#print(explore_data(parseoApple(),0,1))
+#print(explore_data(parseoAndroid(),0,1))
+
+
+##Although the way of collecting the data has some error-solving, there are some duplicates. We will eliminate the rows with less reviews.
+def eliminatingDuplicates(dataset):
+    uniqueApps=[]
+    duplicatedApps=[]
+    for app in dataset:
+        if(app[0] in uniqueApps):
+            duplicatedApps.append((app[0]))
+        else:
+            uniqueApps.append(app[0])
+    print(len(duplicatedApps))
+
+    max_reviews = dict()
+    for app in parseoAndroid():
+        name = app[0]
+        n_reviews= app[3]
+        if name in max_reviews.keys() and max_reviews[name]<n_reviews:
+            max_reviews[name]=n_reviews
+        if name not in max_reviews.keys():
+            max_reviews[name]=n_reviews
+
+   ### POR SI SIRVE LUEGO duplicatedApps= duplicatedApps.sort(key=lambda a:   a[1])
+    for item in max_reviews.items():
+        print(item)
+
+
+
+eliminatingDuplicates(parseoAndroid())
+
+
