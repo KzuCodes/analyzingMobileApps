@@ -1,9 +1,11 @@
 import csv
+import math
 rutaAndroid= "data/googleplaystore.csv"
 rutaApple="data/AppleStore.csv"
 apple = open(rutaApple, "r")
 datosAndroid=[]
 datosApple=[]
+
 def parseoAndroid():
     with open (rutaAndroid, "r") as csv_file:
         android = csv.reader(csv_file)
@@ -48,11 +50,11 @@ def parseoApple():
             else:
 
                 if len(linea)==16:
-                    id = linea[0]
+                    id = int(linea[0])
                     trackName = linea[1]
                     sizeBytes = linea[2]
                     currency = linea[3]
-                    price = linea[4]
+                    price = float(linea[4].replace("$",""))
                     ratingCountTot = linea[5]
                     ratingCountVer = linea[6]
                     userRating = linea[7]
@@ -82,7 +84,7 @@ def explore_data(dataset, start, end, rows_and_columns=False):
         print('Number of columns:', len(dataset[0]))
 
 #print(explore_data(parseoAndroid(),0,len(parseoAndroid()), True))
-#print(explore_data(parseoApple(),0,len(parseoApple())))
+#print(explore_data(parseoApple(),0,len(parseoApple()), True))
 #print(explore_data(parseoApple(),0,1))
 #print(explore_data(parseoAndroid(),0,1))
 
@@ -96,7 +98,7 @@ def eliminatingDuplicates(dataset):
             duplicatedApps.append((app[0]))
         else:
             uniqueApps.append(app[0])
-    print(len(duplicatedApps))
+    #print(len(duplicatedApps))
 
     max_reviews = dict()
     for app in parseoAndroid():
@@ -108,11 +110,61 @@ def eliminatingDuplicates(dataset):
             max_reviews[name]=n_reviews
 
    ### POR SI SIRVE LUEGO duplicatedApps= duplicatedApps.sort(key=lambda a:   a[1])
-    for item in max_reviews.items():
-        print(item)
+    androidClean=[]
+    alreadyAdded=[]
+    for app in parseoAndroid():
+        name = app[0]
+        numRev = app[3]
+        if numRev==max_reviews[name] and name not in alreadyAdded:
+            androidClean.append(app)
+            alreadyAdded.append(name)
+    return androidClean
 
 
+#print(len(eliminatingDuplicates(parseoAndroid())))
 
-eliminatingDuplicates(parseoAndroid())
+def eliminatingNonEnglish(str):
+    eng=True
+    sum=0
+    for char in str:
+        if ord(char)>127:
+            sum+=1
+    if sum>3:
+        eng=False
+    return eng
 
+# print(eliminatingNonEnglish('Instagram'))
+# print(eliminatingNonEnglish('爱奇艺PPS -《欢乐颂2》电视剧热播'))
+# print(eliminatingNonEnglish('Docs To Go™ Free Office Suite'))
+# print(eliminatingNonEnglish('Instachat 😜'))
 
+def cleanDatasets(dataset):
+    res=[]
+    for app in dataset:
+        if len(app)>13:
+            name = app[1]
+        else:
+            name = app[0]
+        if eliminatingNonEnglish(name)==True:
+            res.append(app)
+    return res
+
+#print(len(cleanDatasets(parseoApple())))
+
+def gettingFreeApps(dataset):
+    res=[]
+    first=True
+    for app in dataset:
+        if(first==True):
+            first=False
+        else:
+
+            if len(app)>13:
+                price=app[4]
+            else: 
+                price = app[7]
+            if math.isclose(price, 0.0):
+                res.append(app)
+    return res
+
+print(len(gettingFreeApps(parseoApple())))
