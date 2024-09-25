@@ -167,4 +167,30 @@ def gettingFreeApps(dataset):
                 res.append(app)
     return res
 
-print(len(gettingFreeApps(parseoApple())))
+#print(len(gettingFreeApps(parseoApple())))
+
+def freqTable(dataset, index):
+    res=dict()
+    for app in dataset:
+        genre=app[index]
+        if genre not in res.keys():
+            res[genre]=1
+        else:
+            res[genre]+=1
+    for key in res.keys():
+        res[key]=(res[key]/(len(dataset)-1))*100
+    return res
+
+def display_table(dataset, index):
+    table = freqTable(dataset, index)
+    table_display = []
+    for key in table:
+        key_val_as_tuple = (table[key], key)
+        table_display.append(key_val_as_tuple)
+
+    table_sorted = sorted(table_display, reverse = True)
+    for entry in table_sorted:
+        print(entry[1], ':', entry[0]) 
+
+
+print(display_table(parseoApple(),11))
